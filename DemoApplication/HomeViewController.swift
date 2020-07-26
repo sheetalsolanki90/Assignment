@@ -13,11 +13,6 @@ import RxSwift
 
 class HomeViewController: UIViewController {
     var tableView = UITableView()
-    private let dataSource = RxTableViewSectionedReloadDataSource<SectionModel<String, MyCellViewModel>>(configureCell: {_, tableView, indexPath, viewModel in
-        let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell") as! MyCell
-        cell.configure(viewModel: viewModel)
-        return cell
-        })
     private var pullControl = UIRefreshControl()
     public var countryPropertyList = PublishSubject<[CountryProperties]>()
     var countryViewModel = CountryViewModel()
@@ -38,7 +33,6 @@ class HomeViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     func setUpTableView(){
-
         tableView = UITableView()
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -48,6 +42,7 @@ class HomeViewController: UIViewController {
         self.view.addConstraint(NSLayoutConstraint(item: tableView, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 0))
         self.view.addConstraint(NSLayoutConstraint(item: tableView, attribute: .trailing, relatedBy: .equal, toItem: view, attribute: .trailing, multiplier: 1, constant: 0))
         tableView.tableFooterView = UIView()
+        //setting up Pull to refresh
         pullControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
         pullControl.addTarget(self, action: #selector(refreshListData(_:)), for: .valueChanged)
         if #available(iOS 10.0, *) {
@@ -56,11 +51,10 @@ class HomeViewController: UIViewController {
             tableView.addSubview(pullControl)
         }
     }
-    // Actions
+    // Action when Pull to refresh event occur
     @objc private func refreshListData(_ sender: Any) {
         self.pullControl.endRefreshing() // You can stop after API Call
         countryViewModel.requestData()
-        
     }
 
     private func setupBinding(){

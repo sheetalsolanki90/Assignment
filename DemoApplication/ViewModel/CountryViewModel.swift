@@ -19,7 +19,6 @@ class CountryViewModel: NSObject {
     public let error : PublishSubject<HomeError> = PublishSubject()
     private let disposable = DisposeBag()
     public func requestData(){
-
         self.loading.onNext(true)
         APIManager.requestData(url: "s/2iodh4vg0eortkl/facts.json", method: .get, parameters: nil, completion: { (result) in
             self.loading.onNext(false)

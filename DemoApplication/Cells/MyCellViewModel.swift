@@ -14,7 +14,6 @@ protocol MyCellViewModelType {
     var description: Driver<String> { get }
     var imageUrl : Driver<String> { get }
 }
-
 class MyCellViewModel: MyCellViewModelType {
     var title: Driver<String>
     var description: Driver<String>

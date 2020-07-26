@@ -16,7 +16,6 @@ struct CountryProperties : Codable {
     let imageHref : String?
 }
 // MARK: Convenience initializers
-
 extension CountryProperties {
     init?(data: Data) {
         guard let me = try? JSONDecoder().decode(CountryProperties.self, from: data) else { return nil }

@@ -13,20 +13,13 @@ import RxSwift
 
 class MyCell: UITableViewCell {
 
-    // MARK: Constants
-
-    struct Font {
-        static let messageLabel = UIFont.systemFont(ofSize: 14)
-    }
-
-
     // MARK: Properties
     private var disposeBag: DisposeBag?
     let containerView:UIView = {
-      let view = UIView()
-      view.translatesAutoresizingMaskIntoConstraints = false
-      view.clipsToBounds = true // this will make sure its children do not go out of the boundary
-      return view
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.clipsToBounds = true // this will make sure its children do not go out of the boundary
+        return view
     }()
     let imgView:UIImageView = {
         let img = UIImageView()
@@ -36,36 +29,36 @@ class MyCell: UITableViewCell {
         img.layer.borderColor = UIColor.orange.cgColor
         img.layer.borderWidth = 3.0
         img.clipsToBounds = true
-       return img
+        return img
     }()
     let titleLbl:UILabel = {
-      let label = UILabel()
-      label.font = UIFont.boldSystemFont(ofSize: 17)
-      label.textColor =  UIColor.black
-      label.clipsToBounds = true
-      label.translatesAutoresizingMaskIntoConstraints = false
-       return label
+        let label = UILabel()
+        label.font = UIFont.boldSystemFont(ofSize: 17)
+        label.textColor =  UIColor.black
+        label.clipsToBounds = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
     let descriptionLbl:UILabel = {
-      let label = UILabel()
-      label.font = UIFont.boldSystemFont(ofSize: 14)
-      label.textColor =  UIColor.black
-      label.numberOfLines = 0
-      label.lineBreakMode = .byWordWrapping
-      label.clipsToBounds = true
-      label.sizeToFit()
-      label.translatesAutoresizingMaskIntoConstraints = false
-       return label
+        let label = UILabel()
+        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.textColor =  UIColor.black
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.clipsToBounds = true
+        label.sizeToFit()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
     // MARK: Initializing
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-       containerView.addSubview(imgView)
-       containerView.addSubview(titleLbl)
-       containerView.addSubview(descriptionLbl)
-       self.contentView.addSubview(containerView)
-       setConstraints()
+        containerView.addSubview(imgView)
+        containerView.addSubview(titleLbl)
+        containerView.addSubview(descriptionLbl)
+        self.contentView.addSubview(containerView)
+        setConstraints()
 
     }
     func setConstraints(){
@@ -105,19 +98,19 @@ class MyCell: UITableViewCell {
     func configure(viewModel: MyCellViewModel) {
         self.disposeBag = DisposeBag()
         guard let disposeBag = self.disposeBag else { return }
-       viewModel.title
-        .asObservable()
-        .map { $0 }
-        .bind(to:self.titleLbl.rx.text)
-        .disposed(by:disposeBag)
+        viewModel.title
+            .asObservable()
+            .map { $0 }
+            .bind(to:self.titleLbl.rx.text)
+            .disposed(by:disposeBag)
 
         viewModel.description
-        .asObservable()
-        .map { $0 }
-        .bind(to:self.descriptionLbl.rx.text)
-        .disposed(by:disposeBag)
+            .asObservable()
+            .map { $0 }
+            .bind(to:self.descriptionLbl.rx.text)
+            .disposed(by:disposeBag)
         viewModel.imageUrl.asObservable().subscribe(onNext: { value in
-                   print("Set \(String(describing: value))")
+            print("Set \(String(describing: value))")
             self.imgView.image = nil
             if value.count > 0{
                 let url = URL(string: value)!
@@ -130,11 +123,7 @@ class MyCell: UITableViewCell {
 
         }).disposed(by: disposeBag)
 
-
     }
-
-
-
     // MARK: Layout
 
     override func layoutSubviews() {
@@ -144,42 +133,35 @@ class MyCell: UITableViewCell {
 
 }
 extension UIView {
-
- func anchor (top: NSLayoutYAxisAnchor?, left: NSLayoutXAxisAnchor?, bottom: NSLayoutYAxisAnchor?, right: NSLayoutXAxisAnchor?, paddingTop: CGFloat, paddingLeft: CGFloat, paddingBottom: CGFloat, paddingRight: CGFloat, width: CGFloat, height: CGFloat, enableInsets: Bool) {
- var topInset = CGFloat(0)
- var bottomInset = CGFloat(0)
-
- if #available(iOS 11, *), enableInsets {
- let insets = self.safeAreaInsets
- topInset = insets.top
- bottomInset = insets.bottom
-
-    print("Top: /(topInset)")
-
-    print("bottom: /(bottomInset)")
- }
-
- translatesAutoresizingMaskIntoConstraints = false
-
- if let top = top {
- self.topAnchor.constraint(equalTo: top, constant: paddingTop+topInset).isActive = true
- }
- if let left = left {
- self.leftAnchor.constraint(equalTo: left, constant: paddingLeft).isActive = true
- }
- if let right = right {
- rightAnchor.constraint(equalTo: right, constant: -paddingRight).isActive = true
- }
- if let bottom = bottom {
- bottomAnchor.constraint(equalTo: bottom, constant: -paddingBottom-bottomInset).isActive = true
- }
- if height != 0 {
- heightAnchor.constraint(equalToConstant: height).isActive = true
- }
- if width != 0 {
- widthAnchor.constraint(equalToConstant: width).isActive = true
- }
-
- }
+    func anchor (top: NSLayoutYAxisAnchor?, left: NSLayoutXAxisAnchor?, bottom: NSLayoutYAxisAnchor?, right: NSLayoutXAxisAnchor?, paddingTop: CGFloat, paddingLeft: CGFloat, paddingBottom: CGFloat, paddingRight: CGFloat, width: CGFloat, height: CGFloat, enableInsets: Bool) {
+        var topInset = CGFloat(0)
+        var bottomInset = CGFloat(0)
+        if #available(iOS 11, *), enableInsets {
+            let insets = self.safeAreaInsets
+            topInset = insets.top
+            bottomInset = insets.bottom
+            print("Top: /(topInset)")
+            print("bottom: /(bottomInset)")
+        }
+        translatesAutoresizingMaskIntoConstraints = false
+        if let top = top {
+            self.topAnchor.constraint(equalTo: top, constant: paddingTop+topInset).isActive = true
+        }
+        if let left = left {
+            self.leftAnchor.constraint(equalTo: left, constant: paddingLeft).isActive = true
+        }
+        if let right = right {
+            rightAnchor.constraint(equalTo: right, constant: -paddingRight).isActive = true
+        }
+        if let bottom = bottom {
+            bottomAnchor.constraint(equalTo: bottom, constant: -paddingBottom-bottomInset).isActive = true
+        }
+        if height != 0 {
+            heightAnchor.constraint(equalToConstant: height).isActive = true
+        }
+        if width != 0 {
+            widthAnchor.constraint(equalToConstant: width).isActive = true
+        }
+    }
 
 }
