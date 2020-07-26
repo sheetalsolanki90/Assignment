@@ -14,7 +14,7 @@ class CountryViewModel: NSObject {
         case serverMessage(String)
     }
     public let countryRowList : PublishSubject<[CountryProperties]> = PublishSubject()
-    public var countryTitle = ""
+    public var countryTitle : PublishSubject<String> = PublishSubject()
     public let loading: PublishSubject<Bool> = PublishSubject()
     public let error : PublishSubject<HomeError> = PublishSubject()
     private let disposable = DisposeBag()
@@ -25,9 +25,8 @@ class CountryViewModel: NSObject {
             self.loading.onNext(false)
             switch result {
             case .success(let returnJson) :
-                self.countryTitle = returnJson["title"].stringValue;
+                self.countryTitle.onNext(returnJson["title"].stringValue)
                 let countryRows = returnJson["rows"].arrayValue.compactMap {return CountryProperties(data: try! $0.rawData())}
-
                 self.countryRowList.onNext(countryRows)
             case .failure(let failure) :
                 switch failure {

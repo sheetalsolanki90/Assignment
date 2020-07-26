@@ -18,17 +18,22 @@ class HomeViewController: UIViewController {
         cell.configure(viewModel: viewModel)
         return cell
         })
-
+    private var pullControl = UIRefreshControl()
     public var countryPropertyList = PublishSubject<[CountryProperties]>()
     var countryViewModel = CountryViewModel()
-
     private let disposeBag = DisposeBag()
-
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpTableView()
         countryViewModel.requestData()
         countryViewModel.countryRowList.observeOn(MainScheduler.instance).bind(to: countryPropertyList).disposed(by: disposeBag)
+        let _: () = countryViewModel.countryTitle.subscribe(onNext: { str in
+            if(!str.isEmpty){
+                DispatchQueue.main.async {
+                    self.title = str
+                }
+            }
+        }).disposed(by: disposeBag)
         setupBinding()
         // Do any additional setup after loading the view.
     }
@@ -38,21 +43,31 @@ class HomeViewController: UIViewController {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         self.view.backgroundColor = UIColor.white
-        self.view.addConstraint(NSLayoutConstraint(item: tableView, attribute: .top, relatedBy: .equal, toItem: self.view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 40))
+        self.view.addConstraint(NSLayoutConstraint(item: tableView, attribute: .top, relatedBy: .equal, toItem: self.view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 0))
         self.view.addConstraint(NSLayoutConstraint(item: tableView, attribute: .bottom, relatedBy: .equal, toItem: self.view.safeAreaLayoutGuide, attribute:.bottom, multiplier: 1, constant: 0))
         self.view.addConstraint(NSLayoutConstraint(item: tableView, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 0))
         self.view.addConstraint(NSLayoutConstraint(item: tableView, attribute: .trailing, relatedBy: .equal, toItem: view, attribute: .trailing, multiplier: 1, constant: 0))
         tableView.tableFooterView = UIView()
+        pullControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
+        pullControl.addTarget(self, action: #selector(refreshListData(_:)), for: .valueChanged)
+        if #available(iOS 10.0, *) {
+            tableView.refreshControl = pullControl
+        } else {
+            tableView.addSubview(pullControl)
+        }
+    }
+    // Actions
+    @objc private func refreshListData(_ sender: Any) {
+        self.pullControl.endRefreshing() // You can stop after API Call
+        countryViewModel.requestData()
+        
     }
 
     private func setupBinding(){
         tableView.register(MyCell.self, forCellReuseIdentifier: "MyCell")
-
         tableView
         .rx.setDelegate(self)
         .disposed(by: disposeBag)
-
-        self.title = "Help me!"
        countryPropertyList.bind(to: tableView.rx.items(cellIdentifier: "MyCell", cellType: MyCell.self)) {  (row,countryInfo,cell) in
             let mycellModel = MyCellViewModel.init(model: countryInfo)
             cell.configure(viewModel: mycellModel)
@@ -76,20 +91,7 @@ extension HomeViewController: UITableViewDelegate {
     }
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
-
     }
 
 }
-//extension HomeViewController: UITableViewDataSource {
-//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return countryPropertyList.map{ $0.count}
-//    }
-//
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//
-//    }
-//
-//    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-//        return "Section name"
-//    }
-//}
+
